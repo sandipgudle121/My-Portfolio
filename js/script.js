@@ -56,45 +56,25 @@ window.addEventListener('load', checkScroll);
 window.addEventListener('scroll', checkScroll);
 
 // Contact Form Submission
-if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        // Get form values
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const message = document.getElementById('message').value;
-        
-        // Simple form validation
-        if (name && email && message) {
-            // In a real application, you would send this data to a server
-            // For this demo, we'll just show a success message
-            const formGroups = document.querySelectorAll('.form-group');
-            formGroups.forEach(group => group.style.display = 'none');
-            
-            const submitBtn = document.querySelector('.contact-form button');
-            submitBtn.style.display = 'none';
-            
-            const successMessage = document.createElement('div');
-            successMessage.classList.add('success-message');
-            successMessage.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                <h3>Message Sent Successfully!</h3>
-                <p>Thank you for reaching out, ${name}. I'll get back to you soon.</p>
-            `;
-            
-            contactForm.appendChild(successMessage);
-            
-            // Reset form after 5 seconds
-            setTimeout(() => {
-                formGroups.forEach(group => group.style.display = 'block');
-                submitBtn.style.display = 'block';
-                successMessage.remove();
-                contactForm.reset();
-            }, 5000);
-        }
+document.querySelector('.contact-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const message = document.getElementById('message').value;
+
+    const res = await fetch('http://localhost:3001/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, message })
     });
-}
+
+    if (res.ok) {
+        alert('Message sent!');
+        this.reset();
+    } else {
+        alert('Failed to send message.');
+    }
+});
 
 // Smooth scrolling for navigation links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
